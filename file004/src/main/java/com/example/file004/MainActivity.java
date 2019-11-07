@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -41,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
      File[] currentFiles;
      AlertDialog dialog;
      EditText editText;
-     static File watingCopyFile;
+     boolean canback=true;
+     static File watingCopyFile=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +60,11 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File newFile = new File(currentparent.getPath()+"/"+watingCopyFile.getName());
-                if (watingCopyFile.equals(null)) {
+                if (watingCopyFile==null) {
                     Toast.makeText(MainActivity.this,"粘贴板为空。",Toast.LENGTH_SHORT).show();
 
                 } else {
+                    File newFile = new File(currentparent.getPath()+"/"+watingCopyFile.getName());
                     if (watingCopyFile.isFile()&&watingCopyFile.exists()){
                         try {
                             FileInputStream fis = new FileInputStream(watingCopyFile);
@@ -88,8 +90,9 @@ public class MainActivity extends AppCompatActivity {
                     if (newFile.exists()) {
                         Toast.makeText(MainActivity.this,"复制" + newFile.getName() + "成功",Toast.LENGTH_SHORT).show();
                         currentFiles=currentparent.listFiles();
+                        currentFiles=Sort(currentFiles);
                         inflateListView(currentFiles);
-                        inflateListView(currentFiles);
+
                     }
                 }
             }
@@ -120,12 +123,16 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 String name =  editText.getText().toString();
-                                if (name != null) {
-                                    File folder = new File(currentparent.getPath() + "/" + name);
+                                File folder = new File(currentparent.getPath() + "/" + name);
+                                if(name!=null&&folder.exists()){
+                                    Toast.makeText(MainActivity.this,"文件夹已存在。",Toast.LENGTH_SHORT).show();
+
+                                }else if (name != null) {
                                     folder.mkdirs();
                                     if (folder.exists()) {
-                                        Toast.makeText(MainActivity.this,"文件："+name + " 创建成功",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this,"文件夹创建成功",Toast.LENGTH_SHORT).show();
                                         currentFiles=currentparent.listFiles();
+                                        currentFiles=Sort(currentFiles);
                                         inflateListView(currentFiles);
                                         dialog.dismiss();
                                     }
@@ -142,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (root.exists()){
             currentparent=root;
             currentFiles=root.listFiles();
+            currentFiles=Sort(currentFiles);
             inflateListView(currentFiles);
 
 
@@ -167,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 if(currentFiles[i].isDirectory()){
                     currentparent=currentFiles[i];
                     currentFiles=tmp;
+                    currentFiles=Sort(currentFiles);
                     inflateListView(currentFiles);
                 }
 
@@ -187,15 +196,9 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    if(!currentparent.getCanonicalPath().equals("/mnt/sdcard")){
-                        currentparent=currentparent.getParentFile();
-                        currentFiles=currentparent.listFiles();
-                        inflateListView(currentFiles);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                back();
+
             }
         });
 
@@ -203,22 +206,26 @@ public class MainActivity extends AppCompatActivity {
     private void inflateListView(File[] files){
 
 
-        List<Map<String,Object>> listItems=new ArrayList<>();
-        for(int i=0;i<files.length;i++){
-            Map<String,Object> listItem=new HashMap<>();
-            if(files[i].isDirectory()){
-                listItem.put("icon",R.drawable.files);
-            }else {
-                listItem.put("icon",R.drawable.file);
-            }
-            listItem.put("filename",files[i].getName());
-            listItems.add(listItem);
+//        List<Map<String,Object>> listItems=new ArrayList<>();
+//        for(int i=0;i<files.length;i++){
+//            Map<String,Object> listItem=new HashMap<>();
+//            if(files[i].isDirectory()){
+//                listItem.put("icon",R.drawable.files);
+//            }else {
+//                listItem.put("icon",R.drawable.file);
+//            }
+//            listItem.put("filename",files[i].getName());
+//            listItems.add(listItem);
+//
+//        }
+//        SimpleAdapter simpleAdapter=new SimpleAdapter(this,listItems,R.layout.line,
+//                new String[]{"icon","filename"},
+//                new int[]{R.id.icon,R.id.file_name});
+//        listView.setAdapter(simpleAdapter);
 
-        }
-        SimpleAdapter simpleAdapter=new SimpleAdapter(this,listItems,R.layout.line,
-                new String[]{"icon","filename"},
-                new int[]{R.id.icon,R.id.file_name});
-        listView.setAdapter(simpleAdapter);
+        ListAdapter listAdapter=new ListAdapter(MainActivity.this,files);
+        listView.setAdapter(listAdapter);
+
         try {
             textView.setText("当前路径："+currentparent.getCanonicalPath());
         } catch (IOException e) {
@@ -250,8 +257,16 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"已复制。"+id,Toast.LENGTH_SHORT).show();
                 break;
             case 2:
+
+
                 currentFiles[(int) info.id].delete();
+
+
+
+
+
                 currentFiles=currentparent.listFiles();
+                currentFiles=Sort(currentFiles);
                 inflateListView(currentFiles);
                 Toast.makeText(MainActivity.this,"已删除。",Toast.LENGTH_SHORT).show();
                 break;
@@ -292,12 +307,11 @@ public class MainActivity extends AppCompatActivity {
                                 File file = currentFiles[(int) info.id];
                                 file.renameTo(new File(file.getParentFile().getAbsolutePath() + "/" + dirName));
                                 currentFiles=currentparent.listFiles();
+                                currentFiles=Sort(currentFiles);
                                 inflateListView(currentFiles);
 
                             }
                         });
-
-                Toast.makeText(MainActivity.this,"已重命名。",Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
@@ -320,4 +334,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public File[] Sort(File[] files){
+        File[] filesort=new File[files.length];
+        int s=0;
+
+        for (int i=0;i<files.length;i++){
+            if(files[i].isDirectory()){
+                filesort[s]=files[i];
+                s++;
+            }
+        }
+        for (int i=0;i<files.length;i++){
+            if(!files[i].isDirectory()){
+                filesort[s]=files[i];
+                s++;
+            }
+        }
+        files=filesort;
+        return files;
+
+    }
+    public void back(){
+        try {
+            if(!currentparent.getCanonicalPath().equals("/storage/emulated/0")){
+                currentparent=currentparent.getParentFile();
+                currentFiles=currentparent.listFiles();
+                currentFiles=Sort(currentFiles);
+                inflateListView(currentFiles);
+
+            }else {
+                canback=false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode==KeyEvent.KEYCODE_BACK&&canback){
+            back();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }
