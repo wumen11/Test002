@@ -41,14 +41,13 @@
 
 
     <!--当前文件夹directory下的文件列表,如果没有文件应该隐藏此view,显示"文件内容为空"的view-->
-
-    <!--当前目录下内容为空或者加载文件目录时显示加载中-->
     <ListView
         android:id="@+id/rc_fm_lv_storage_folder_list_files"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none" />
 
+    <!--当前目录下内容为空或者加载文件目录时显示加载中-->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

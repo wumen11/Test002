@@ -257,14 +257,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"已复制。"+id,Toast.LENGTH_SHORT).show();
                 break;
             case 2:
-
-
+                if(currentFiles[(int) info.id].isDirectory()){
+                    deleteDirectory(currentFiles[(int) info.id].getPath());
+                }else {
                 currentFiles[(int) info.id].delete();
-
-
-
-
-
+                }
                 currentFiles=currentparent.listFiles();
                 currentFiles=Sort(currentFiles);
                 inflateListView(currentFiles);
@@ -379,4 +376,27 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+
+
+    public void deleteDirectory(String filePath) {
+
+        if (!filePath.endsWith(File.separator)) {
+            filePath = filePath + File.separator;
+        }
+        File dirFile = new File(filePath);
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+            return;
+        }
+        File[] files = dirFile.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isFile()) {
+               files[i].delete();
+            } else {
+                deleteDirectory(files[i].getAbsolutePath());
+            }
+        }
+        dirFile.delete();
+    }
+
 }
