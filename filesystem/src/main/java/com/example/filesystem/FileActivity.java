@@ -211,11 +211,16 @@ public class FileActivity extends AppCompatActivity {
                 Toast.makeText(FileActivity.this,"已复制。"+id,Toast.LENGTH_SHORT).show();
                 break;
             case 2:
-                if(currentFiles[(int) info.id].isDirectory()){
-                    deleteDirectory(currentFiles[(int) info.id].getPath());
-                }else {
-                    currentFiles[(int) info.id].delete();
-                }
+
+                FileProcessing fileProcessing=new FileProcessing();
+                fileProcessing.delete(currentFiles[(int) info.id]);
+
+
+//                if(currentFiles[(int) info.id].isDirectory()){
+//                    deleteDirectory(currentFiles[(int) info.id].getPath());
+//                }else {
+//                    currentFiles[(int) info.id].delete();
+//                }
                 currentFiles=currentparent.listFiles();
                 currentFiles=Sort(currentFiles);
                 inflateListView(currentFiles);

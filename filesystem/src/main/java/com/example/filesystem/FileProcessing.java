@@ -13,6 +13,9 @@ public class FileProcessing {
         this.context = context;
         this.file = file;
     }
+    public FileProcessing() {
+
+    }
     public  void delete(File file){
 
         if(file.isDirectory()){
@@ -42,15 +45,6 @@ public class FileProcessing {
         }
         dirFile.delete();
     }
-
-    public void copy(){
-
-    }
-
-
-
-
-
 
 
 }

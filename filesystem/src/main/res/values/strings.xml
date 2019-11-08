@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FileManager</string>
+    <string name="app_name">FileSystem</string>
     <string name="rc_ac_file_download_preview">文件预览</string>
     <string name="rc_ac_file_manager_category_file">文档</string>
     <string name="rc_ac_file_manager_category_title">按分类查找</string>

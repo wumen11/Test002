@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import androidx.core.content.FileProvider;
+
 public class CallOtherOpenFile {
     public void openFile(Context context, String path) {
         File file = new File(path);
@@ -22,8 +24,10 @@ public class CallOtherOpenFile {
             intent.setAction(Intent.ACTION_VIEW);
             //获取文件file的MIME类型
             String type = getMIMEType(file);
+            Uri contentUri = FileProvider.getUriForFile(context,
+                    "com.example.filesystem.fileprovider",file);
             //设置intent的data和Type属性。
-            intent.setDataAndType(/*uri*/Uri.fromFile(file), type);
+            intent.setDataAndType(/*uri*/contentUri, type);
             //跳转
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
