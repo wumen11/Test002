@@ -1,4 +1,4 @@
-package com.example.file005;
+package com.example.file004;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,20 +17,18 @@ public class MusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         listView=findViewById(R.id.listview);
-        List<Music> list=FileManager.getInstance(MusicActivity.this).getMusics();
-        ListAdapter listAdapter=new ListAdapter(MusicActivity.this,list);
-        listView.setAdapter(listAdapter);
-
+        final List<Music> list=FileManager.getInstance(MusicActivity.this).getMusics();
+        MusicAdapter musicAdapter=new MusicAdapter(MusicActivity.this,list);
+        listView.setAdapter(musicAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                CallOtherOpenFile openFile=new CallOtherOpenFile();
+                openFile.openFile(MusicActivity.this,list.get(i).getPath());
             }
         });
 
-
-
-
     }
+
 
 }
