@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,9 +25,16 @@ public class VideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video);
         video=new Video();
         listView=findViewById(R.id.listview);
-        List<Video> list=FileManager.getInstance(VideoActivity.this).getVideos();
+        final List<Video> list=FileManager.getInstance(VideoActivity.this).getVideos();
         VideoAdapter videoAdapter=new VideoAdapter(VideoActivity.this,list);
         listView.setAdapter(videoAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CallOtherOpenFile openFile=new CallOtherOpenFile();
+                openFile.openFile(VideoActivity.this,list.get(i).getPath());
+            }
+        });
 
 
 

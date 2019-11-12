@@ -1,2 +1,2 @@
-include ':app', ':file001', ':file002', ':file003', ':file004', ':file005', ':filesystem'
+include ':app', ':file001', ':file002', ':file003', ':file004', ':file005', ':filesystem', ':file006', ':file007'
 rootProject.name='Test002'
