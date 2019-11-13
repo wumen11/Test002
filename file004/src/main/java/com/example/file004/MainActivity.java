@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (watingCopyFile==null) {
+
                     Toast.makeText(MainActivity.this,"粘贴板为空。",Toast.LENGTH_SHORT).show();
 
                 } else {
